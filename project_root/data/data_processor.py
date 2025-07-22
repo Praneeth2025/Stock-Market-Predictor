@@ -4,8 +4,8 @@ import sys
 import os
 
 
-sys.path.append(os.path.abspath("../notebooks"))
-from functions import calculate_ATR # type: ignore
+sys.path.append(os.path.abspath("../utils"))
+from indicators import calculate_ATR # type: ignore
 
 data=pd.read_csv("xauusd_15m_data.csv")
 data=calculate_ATR(data)
@@ -16,8 +16,8 @@ for i in range(len(data)):
         data.loc[i, "result"] = "Hold"
         continue
 
-    target_tp = data.loc[i, "open"] + 2.5 * data.loc[i, "ATR"]
-    target_sl = data.loc[i, "open"] - 2.5 * data.loc[i, "ATR"]
+    target_tp = data.loc[i, "open"] + 1.5 * data.loc[i, "ATR"]
+    target_sl = data.loc[i, "open"] - 1.5 * data.loc[i, "ATR"]
     for j in range(i, min(i + 8, len(data))):
         # Check if TP hit
         if data.loc[j, "low"] <= target_tp <= data.loc[j, "high"]:
@@ -31,4 +31,4 @@ for i in range(len(data)):
     if data.loc[i, "result"] is None:
         data.loc[i, "result"] = "Hold"
 
-data.to_csv("final_raw_data.csv",index=False)
+data.to_csv("processed_data.csv",index=False)

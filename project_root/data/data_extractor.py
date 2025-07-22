@@ -27,7 +27,7 @@ df = pd.DataFrame(rates)
 df['time'] = pd.to_datetime(df['time'], unit='s')
 
 df.to_csv("xauusd_15m_data.csv", index=False)
-print(df.tail())
+
 
 # Shutdown MT5
 mt5.shutdown()
