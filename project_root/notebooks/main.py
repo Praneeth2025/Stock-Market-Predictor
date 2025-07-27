@@ -44,14 +44,18 @@ data = data[data['Day of the week'] < 5]
 # Drop missing values
 data.dropna(inplace=True)
 
+
 # Remove unnecessary columns
-data = data.iloc[:, 7:]
-x = data.drop(['result', 'MACD_signal', 'MACD_diff'], axis=1)
-y = data['result']
+data_reduced = data.iloc[:, 7:]
+
+
+
 
 # Apply log transformation for skewed features
 log_trns = FunctionTransformer(func=np.log1p)
 data['ATR'] = log_trns.fit_transform(data['ATR'])
+
+
 
 # Outlier Removal Function
 def hybrid_outler_removal(df, cols, extreme_thresh=2):
@@ -77,7 +81,10 @@ def hybrid_outler_removal(df, cols, extreme_thresh=2):
     return clean_df
 
 # Apply outlier removal
-data = hybrid_outler_removal(data, ["MACD"])
+data_reduced = hybrid_outler_removal(data_reduced, ["MACD"])
+
+x = data_reduced.drop(['result', 'MACD_signal', 'MACD_diff'], axis=1)
+y = data_reduced['result']
 
 """
 Dimensionality:
@@ -96,3 +103,10 @@ x_standardized = standardizer.fit_transform(x)
 # Apply PCA
 pca = PCA(n_components=6)
 x_reduced_dim = pca.fit_transform(x_standardized)
+
+
+
+
+#train test split
+from sklearn.model_selection import train_test_split
+x_train,x_test,y_train, y_test=train_test_split(x,y,test_size=0.2)
