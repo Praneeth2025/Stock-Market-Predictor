@@ -176,12 +176,15 @@ def preprocess_data(df: pd.DataFrame) -> pd.DataFrame:
     print(final_data.shape)
     return final_data
 
-
+from pathlib import Path
+import pickle
 # -----------------------------
 # 5. Predict
 # -----------------------------
 def make_predictions( processed_data):
-    with open("xgb_model.pkl", "rb") as f:
+    BASE_DIR = Path(__file__).parent
+    model_path = BASE_DIR / "xgb_model.pkl"
+    with open(model_path, "rb") as f:
         model = pickle.load(f)
     predictions = model.predict(processed_data)
     return predictions
