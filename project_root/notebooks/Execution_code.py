@@ -181,7 +181,7 @@ def preprocess_data(df: pd.DataFrame) -> pd.DataFrame:
 # 5. Predict
 # -----------------------------
 def make_predictions( processed_data):
-    with open("C:/Users/vamsi/OneDrive/Desktop/Documents/studies/complete stock market predictor/Stock-Market-Predictor/project_root/models/xgb_model.pkl", "rb") as f:
+    with open("xgb_model.pkl", "rb") as f:
         model = pickle.load(f)
     predictions = model.predict(processed_data)
     return predictions
