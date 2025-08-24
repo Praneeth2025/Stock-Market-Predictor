@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 
 from sklearn.preprocessing import FunctionTransformer, StandardScaler
 from sklearn.decomposition import PCA
-import pandas_ta.momentum.squeeze_pro as sp
 import pandas as pd
 import numpy as np
 from ta.momentum import RSIIndicator
