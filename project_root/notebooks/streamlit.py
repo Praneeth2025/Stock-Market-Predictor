@@ -3,7 +3,7 @@ import yfinance as yf
 import pandas as pd
 import plotly.express as px
 import pandas_ta.momentum.squeeze_pro as sp
-sp.npNaN = np.nan
+
 import pickle
 from datetime import datetime
 import pickle

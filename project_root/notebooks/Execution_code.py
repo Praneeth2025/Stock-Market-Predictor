@@ -7,12 +7,61 @@ from datetime import datetime, timedelta
 from sklearn.preprocessing import FunctionTransformer, StandardScaler
 from sklearn.decomposition import PCA
 import pandas_ta.momentum.squeeze_pro as sp
-sp.npNaN = np.nan
 import pandas as pd
 import numpy as np
 from ta.momentum import RSIIndicator
-import pandas_ta as ta
+
 from ta.trend import MACD
+import pandas as pd
+import numpy as np
+
+def supertrend_direction(df, period=14, multiplier=3):
+    if df.empty:
+        return pd.Series(dtype=float)  # Return empty if no data
+
+    df = df.copy()
+
+    # 1. Calculate ATR
+    high_low = df['high'] - df['low']
+    high_close = abs(df['high'] - df['close'].shift(1))
+    low_close = abs(df['low'] - df['close'].shift(1))
+    tr = pd.concat([high_low, high_close, low_close], axis=1).max(axis=1)
+    atr = tr.rolling(period).mean()
+
+    # 2. Basic Bands
+    upper_basic = (df['high'] + df['low']) / 2 + multiplier * atr
+    lower_basic = (df['high'] + df['low']) / 2 - multiplier * atr
+
+    # 3. Final Bands & Trend
+    upper_band = upper_basic.copy()
+    lower_band = lower_basic.copy()
+    trend = np.zeros(len(df))
+
+    # Initialize first trend
+    trend[0] = 1
+
+    for i in range(1, len(df)):
+        # Update bands
+        if df['close'].iloc[i-1] <= upper_band.iloc[i-1]:
+            upper_band.iloc[i] = min(upper_basic.iloc[i], upper_band.iloc[i-1])
+        else:
+            upper_band.iloc[i] = upper_basic.iloc[i]
+
+        if df['close'].iloc[i-1] >= lower_band.iloc[i-1]:
+            lower_band.iloc[i] = max(lower_basic.iloc[i], lower_band.iloc[i-1])
+        else:
+            lower_band.iloc[i] = lower_basic.iloc[i]
+
+        # Determine trend
+        if df['close'].iloc[i] > upper_band.iloc[i]:
+            trend[i] = 1
+        elif df['close'].iloc[i] < lower_band.iloc[i]:
+            trend[i] = -1
+        else:
+            trend[i] = trend[i-1]
+
+    return pd.Series(trend, index=df.index)
+
 
 def calculate_ATR(df, window=14):
     df['H-L'] = df['high'] - df['low']
@@ -27,13 +76,7 @@ def calculate_RSI(df, window=14):
     df['RSI'] = RSIIndicator(close=df['close'], window=window).rsi()
     return df
 
-def calculate_SuperTrend(df, period=14, multiplier=3):
-    print("HELLO")
-    st = ta.supertrend(df['high'], df['low'], df['close'], length=period, multiplier=multiplier)
-    st.columns = ['Supertrend', 'Supertrend_Direction', 'Supertrend_Trend', 'Supertrend_Source']
-    
-    df['Supertrend_Direction'] = st['Supertrend_Direction']
-    return df
+
 
 
 
@@ -88,7 +131,7 @@ def get_yesterdays_data(ticker_symbol="GC=F", interval="15m", period="5d"):
 # -----------------------------
 def add_features(df: pd.DataFrame) -> pd.DataFrame:
     df = calculate_ATR(df)
-    df = calculate_SuperTrend(df)
+    df['Supertrend_Direction'] = supertrend_direction(df)
     df = calculate_RSI(df)
     df = calculate_MACD(df)
     df['time'] = pd.to_datetime(df['datetime'])
