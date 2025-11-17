@@ -1,7 +1,7 @@
 <img width="1213" height="437" alt="image" src="https://github.com/user-attachments/assets/c0f095fb-84cd-4f8a-86f7-d0fdd2107ee5" />
 
 
-# Stock Market Predictor (Buy / Sell / Hold)
+# Stock Market Predictor (Buy / Sell / Holsd)
 
 Predict short‑term stock movement as **Buy / Sell / Hold** by combining **technical analysis (Supertrend, RSI, ATR)** with **machine learning** and engineered features.
 
