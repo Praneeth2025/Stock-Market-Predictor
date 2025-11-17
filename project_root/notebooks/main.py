@@ -11,7 +11,7 @@ from sklearn.decomposition import PCA
 sys.path.append(os.path.abspath("../utils")) 
 from indicators import calculate_RSI, calculate_MACD, calculate_SuperTrend  # type: ignore
 
-
+a=0
 
 
 # Load Data
